@@ -1,87 +1,94 @@
 <template>
-  <nav class="bf-navbar">
-    <div class="bf-navbar-inner">
-      <div class="bf-navbar-brand">
-        <img src="/images/cf_logo_white.svg" alt="Betaflight" class="bf-logo" />
-        <span v-if="appStore.logFilename" class="bf-filename" :title="appStore.logFilename">
+  <div>
+    <!-- Logo bar with amber accent bottom border -->
+    <div class="toolbar-logo">
+      <div class="flex items-center gap-2">
+        <img src="/images/light-wide-2.svg" alt="Betaflight" class="toolbar-logo-img" />
+        <span class="toolbar-logo-subtitle">Blackbox Explorer</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span v-if="appStore.logFilename" class="toolbar-filename" :title="appStore.logFilename">
           {{ appStore.logFilename }}
         </span>
-      </div>
-
-      <div v-if="logStore.hasLog" class="bf-navbar-actions">
-        <div class="bf-btn-group">
-          <UButton
-            variant="outline"
-            color="neutral"
-            label="New Window"
-            size="xs"
-            class="bf-btn-default"
-            @click="$emit('new-window')"
-          />
-          <UButton
-            variant="solid"
-            color="primary"
-            label="Export video..."
-            size="xs"
-            class="bf-btn-primary"
-            @click="$emit('export-video')"
-          />
-          <UButton
-            variant="solid"
-            color="primary"
-            label="Export Workspaces..."
-            size="xs"
-            class="bf-btn-primary"
-            @click="$emit('export-workspaces')"
-          />
-          <UButton
-            variant="solid"
-            color="primary"
-            label="Export CSV..."
-            size="xs"
-            class="bf-btn-primary"
-            @click="$emit('export-csv')"
-          />
-          <UButton
-            variant="solid"
-            color="primary"
-            label="Export GPX..."
-            size="xs"
-            class="bf-btn-primary"
-            @click="$emit('export-gpx')"
-          />
-          <UButton
-            variant="solid"
-            color="primary"
-            label="Auto Diagnostics"
-            size="xs"
-            class="bf-btn-primary"
-            title="Analyze log for filter/PID observations (experimental)"
-            @click="$emit('open-diagnostics')"
-          />
-          <LogFileInput size="xs" label="Open log file/video" @files-selected="$emit('files-selected', $event)" />
-        </div>
-        <div class="bf-btn-group bf-btn-group-icons">
-          <UButton
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-settings"
-            size="xs"
-            title="User Settings"
-            @click="$emit('open-settings')"
-          />
-          <UButton
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-keyboard"
-            size="xs"
-            title="Keyboard Shortcuts"
-            @click="$emit('open-keys')"
-          />
-        </div>
+        <LogFileInput size="xs" @files-selected="$emit('files-selected', $event)" />
       </div>
     </div>
-  </nav>
+
+    <!-- Action buttons row -->
+    <div v-if="logStore.hasLog" class="toolbar-actions">
+      <div class="flex items-center gap-1">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="New Window"
+          icon="i-lucide-external-link"
+          size="xs"
+          @click="$emit('new-window')"
+        />
+        <USeparator orientation="vertical" class="h-4" />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="Video"
+          icon="i-lucide-video"
+          size="xs"
+          @click="$emit('export-video')"
+        />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="Workspaces"
+          icon="i-lucide-layout-grid"
+          size="xs"
+          @click="$emit('export-workspaces')"
+        />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="CSV"
+          icon="i-lucide-file-spreadsheet"
+          size="xs"
+          @click="$emit('export-csv')"
+        />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="GPX"
+          icon="i-lucide-map-pin"
+          size="xs"
+          @click="$emit('export-gpx')"
+        />
+        <USeparator orientation="vertical" class="h-4" />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="Diagnostics"
+          icon="i-lucide-stethoscope"
+          size="xs"
+          title="Auto Diagnostics (experimental)"
+          @click="$emit('open-diagnostics')"
+        />
+      </div>
+      <div class="flex items-center gap-1">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-settings"
+          size="xs"
+          title="User Settings"
+          @click="$emit('open-settings')"
+        />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-keyboard"
+          size="xs"
+          title="Keyboard Shortcuts"
+          @click="$emit('open-keys')"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -106,75 +113,49 @@ const appStore = useAppStore();
 </script>
 
 <style scoped>
-.bf-navbar {
-  background: #222;
-  border-bottom: 1px solid #080808;
-  color: #9d9d9d;
-  width: 100%;
-}
-
-.bf-navbar-inner {
+.toolbar-logo {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
   padding: 0.35rem 0.75rem;
-  flex-wrap: wrap;
+  background: hsl(0, 0%, 12%);
+  border-bottom: 2px solid var(--color-primary-500, #ffbb00);
 }
 
-.bf-navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.bf-logo {
-  height: 1.35rem;
+.toolbar-logo-img {
+  height: 1.5rem;
   width: auto;
+  filter: brightness(0) invert(1);
 }
 
-.bf-filename {
-  font-size: 0.75rem;
-  color: #9d9d9d;
-  max-width: 280px;
+.toolbar-logo-subtitle {
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary-500, #ffbb00);
+}
+
+.toolbar-filename {
+  font-size: 0.7rem;
+  color: hsl(0, 0%, 60%);
+  max-width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.bf-navbar-actions {
+.toolbar-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-left: auto;
+  justify-content: space-between;
+  padding: 0.2rem 0.75rem;
+  background: var(--surface-100, hsl(0, 0%, 95%));
+  border-bottom: 1px solid var(--border-color, #ccc);
 }
 
-.bf-btn-group {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-}
-
-.bf-btn-group-icons :deep(button) {
-  color: #ccc;
-}
-
-.bf-btn-primary :deep(button) {
-  font-weight: 600;
-}
-
-.bf-btn-default :deep(button) {
-  background: #fff;
-  border-color: #ccc;
-  color: #333;
-}
-
-:root.dark .bf-btn-default :deep(button) {
-  background: hsl(0, 0%, 22%);
-  border-color: hsl(0, 0%, 35%);
-  color: #eee;
+:root.dark .toolbar-actions {
+  background: var(--surface-200, hsl(0, 0%, 12%));
+  border-bottom-color: var(--surface-800, hsl(0, 0%, 25%));
 }
 </style>

@@ -1,25 +1,13 @@
 <template>
-  <UModal
-    v-model:open="open"
-    :modal="true"
-    :overlay="true"
-    :ui="{
-      overlay:
-        'fixed inset-0 z-[500] bg-black/55 backdrop-blur-[2px] data-[state=open]:animate-[fade-in_200ms_ease-out] data-[state=closed]:animate-[fade-out_200ms_ease-in]',
-      content: 'sm:max-w-3xl z-[501]',
-    }"
-  >
+  <UModal v-model:open="open" :ui="{ content: 'sm:max-w-3xl' }">
     <template #header>
-      <div class="flex items-center gap-2 min-w-0">
-        <UIcon name="i-lucide-stethoscope" class="size-4 shrink-0" />
-        <h4 class="font-semibold truncate">Auto Diagnostics</h4>
-      </div>
+      <h4 class="font-semibold">Auto Diagnostics</h4>
     </template>
 
     <template #body>
       <div
         data-auto-diagnostics
-        class="diagnostics-modal-body"
+        class="flex flex-col gap-4 max-h-[70vh] overflow-y-auto text-sm"
         @mousedown.stop
         @keydown.stop
         @keyup.stop
@@ -29,7 +17,7 @@
           Open a blackbox log (.bbl) first.
         </div>
 
-        <div v-else class="flex flex-col gap-4 max-h-[70vh] overflow-y-auto text-sm">
+        <template v-else>
           <div
             v-if="diagnosticsStore.logQuality"
             class="rounded-lg border border-default px-3 py-2"
@@ -57,7 +45,7 @@
               <USelect
                 :model-value="diagnosticsStore.frameArchetype"
                 :items="frameArchetypeItems"
-                :ui="{ content: 'z-[600]' }"
+                :ui="{ content: 'z-[300]' }"
                 size="sm"
                 class="w-full"
                 @update:model-value="diagnosticsStore.setFrameArchetype"
@@ -81,7 +69,7 @@
               <USelect
                 :model-value="diagnosticsStore.cellCount"
                 :items="cellCountItems"
-                :ui="{ content: 'z-[600]' }"
+                :ui="{ content: 'z-[300]' }"
                 size="sm"
                 class="w-full"
                 @update:model-value="diagnosticsStore.setCellCount"
@@ -333,7 +321,7 @@
           <p v-else-if="diagnosticsStore.analysisError" class="text-sm text-red-400">
             {{ diagnosticsStore.analysisError }}
           </p>
-        </div>
+        </template>
       </div>
     </template>
   </UModal>
@@ -466,11 +454,3 @@ watch(
   },
 );
 </script>
-
-<style scoped>
-.diagnostics-modal-body :deep(input),
-.diagnostics-modal-body :deep(textarea),
-.diagnostics-modal-body :deep(select) {
-  pointer-events: auto;
-}
-</style>

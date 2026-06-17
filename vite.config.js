@@ -70,8 +70,8 @@ export default defineConfig({
         modal: {
           slots: {
             overlay:
-              "fixed inset-0 z-[500] bg-black/55 backdrop-blur-[2px] data-[state=open]:animate-[fade-in_200ms_ease-out] data-[state=closed]:animate-[fade-out_200ms_ease-in]",
-            content: "z-[500]",
+              "fixed inset-0 z-[200] bg-elevated/75 data-[state=open]:animate-[fade-in_200ms_ease-out] data-[state=closed]:animate-[fade-out_200ms_ease-in]",
+            content: "z-[200]",
           },
         },
         colors: {

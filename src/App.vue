@@ -230,14 +230,10 @@ function onOpenDiagnostics() {
   diagnosticsStore.dialogOpen = true;
 }
 
-function closeViewOverlays() {
+function onViewConfig() {
   appStore.headerDialogOpen = false;
   graphStore.hasTableOverlay = false;
   graphStore.hasConfigOverlay = false;
-}
-
-function onViewConfig() {
-  closeViewOverlays();
 }
 
 function onToggleHeader() {
