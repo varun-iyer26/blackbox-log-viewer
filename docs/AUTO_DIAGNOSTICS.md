@@ -64,6 +64,8 @@ src/stores/diagnostics.js
 src/components/AutoDiagnosticsPanel.vue
 ```
 
+Enable GitHub Pages from **Settings → Pages → Build and deployment → GitHub Actions**, then push to `feature/auto-diagnostics-polish`. The `pages-preview.yml` workflow publishes `dist/` for testers.
+
 ## Feedback
 
 Use the **Auto Diagnostics feedback** issue template on this fork. See [PR_SPLIT.md](./PR_SPLIT.md) for upstream contribution plan.

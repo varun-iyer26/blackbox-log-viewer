@@ -10,6 +10,15 @@
         <span v-if="appStore.logFilename" class="toolbar-filename" :title="appStore.logFilename">
           {{ appStore.logFilename }}
         </span>
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="Auto Diagnostics"
+          icon="i-lucide-stethoscope"
+          size="xs"
+          title="Analyze log for filter/PID observations (experimental)"
+          @click="$emit('open-diagnostics')"
+        />
         <LogFileInput size="xs" @files-selected="$emit('files-selected', $event)" />
       </div>
     </div>
@@ -57,16 +66,6 @@
           icon="i-lucide-map-pin"
           size="xs"
           @click="$emit('export-gpx')"
-        />
-        <USeparator orientation="vertical" class="h-4" />
-        <UButton
-          variant="ghost"
-          color="neutral"
-          label="Auto Diagnostics"
-          icon="i-lucide-stethoscope"
-          size="xs"
-          title="Analyze log for filter/PID observations (experimental)"
-          @click="$emit('open-diagnostics')"
         />
       </div>
       <div class="flex items-center gap-1">

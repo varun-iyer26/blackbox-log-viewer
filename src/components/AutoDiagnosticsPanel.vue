@@ -1,8 +1,12 @@
 <template>
   <UModal
     v-model:open="open"
+    :modal="true"
+    :overlay="true"
     :ui="{
-      content: 'sm:max-w-3xl z-[500]',
+      overlay:
+        'fixed inset-0 z-[500] bg-black/55 backdrop-blur-[2px] data-[state=open]:animate-[fade-in_200ms_ease-out] data-[state=closed]:animate-[fade-out_200ms_ease-in]',
+      content: 'sm:max-w-3xl z-[501]',
     }"
   >
     <template #header>
