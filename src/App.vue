@@ -116,7 +116,10 @@
         :videoConfig="playbackStore.videoConfig"
         @save-config="onSaveVideoConfig"
       />
-      <AutoDiagnosticsPanel v-model:open="diagnosticsStore.dialogOpen" />
+      <AutoDiagnosticsPanel
+        v-if="diagnosticsEnabled"
+        v-model:open="diagnosticsStore.dialogOpen"
+      />
     </div>
   </UApp>
 </template>
@@ -130,6 +133,7 @@ import { usePlaybackStore } from "./stores/playback.js";
 import { useSettingsStore } from "./stores/settings.js";
 import { useWorkspaceStore } from "./stores/workspace.js";
 import { useDiagnosticsStore } from "./stores/diagnostics.js";
+import { isDiagnosticsEnabled } from "./diagnostics/feature_flags.js";
 import AppToolbar from "./components/AppToolbar.vue";
 import WelcomePage from "./components/WelcomePage.vue";
 import ViewControls from "./components/ViewControls.vue";
@@ -159,6 +163,7 @@ const playbackStore = usePlaybackStore();
 const settingsStore = useSettingsStore();
 const workspaceStore = useWorkspaceStore();
 const diagnosticsStore = useDiagnosticsStore();
+const diagnosticsEnabled = isDiagnosticsEnabled();
 
 // Centralized CSS class binding — replaces 27 imperative html.classList calls in main.js
 watchEffect(() => {
@@ -227,6 +232,9 @@ function onNewWindow() {
 }
 
 function onOpenDiagnostics() {
+  if (!diagnosticsEnabled) {
+    return;
+  }
   diagnosticsStore.dialogOpen = true;
 }
 

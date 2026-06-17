@@ -58,8 +58,9 @@
           size="xs"
           @click="$emit('export-gpx')"
         />
-        <USeparator orientation="vertical" class="h-4" />
+        <USeparator v-if="diagnosticsEnabled" orientation="vertical" class="h-4" />
         <UButton
+          v-if="diagnosticsEnabled"
           variant="ghost"
           color="neutral"
           label="Diagnostics"
@@ -94,7 +95,10 @@
 <script setup>
 import { useLogStore } from "../stores/log.js";
 import { useAppStore } from "../stores/app.js";
+import { isDiagnosticsEnabled } from "../diagnostics/feature_flags.js";
 import LogFileInput from "./LogFileInput.vue";
+
+const diagnosticsEnabled = isDiagnosticsEnabled();
 
 defineEmits([
   "files-selected",

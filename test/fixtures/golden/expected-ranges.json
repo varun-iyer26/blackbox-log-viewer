@@ -1,0 +1,42 @@
+[
+  {
+    "name": "resonant_roll_220hz",
+    "profile": {
+      "name": "resonant_roll_220hz",
+      "resonanceHz": 220,
+      "sampleCount": 4096,
+      "sampleRateHz": 2000
+    },
+    "expect": {
+      "hardware.frameResonance.peakHz": { "min": 180, "max": 260 },
+      "hardware.frameResonance.confidence": { "min": 30, "max": 100 },
+      "tuning.axes.0.stepEvents": { "min": 0, "max": 20 }
+    }
+  },
+  {
+    "name": "clean_no_tone",
+    "profile": {
+      "name": "clean_no_tone",
+      "resonanceHz": 0,
+      "sampleCount": 4096,
+      "sampleRateHz": 2000
+    },
+    "expect": {
+      "hardware.frameResonance.peakHz": { "min": 0, "max": 500 },
+      "hardware.motorHealth.status": { "oneOf": ["green", "yellow", "red"] }
+    }
+  },
+  {
+    "name": "minimal_buffer",
+    "profile": {
+      "name": "minimal_buffer",
+      "resonanceHz": 0,
+      "sampleCount": 512,
+      "sampleRateHz": 2000
+    },
+    "expect": {
+      "summary.loggingRateHz": { "min": 2000, "max": 2000 },
+      "tuning.axes.0.overshootPct": { "min": 0, "max": 200 }
+    }
+  }
+]

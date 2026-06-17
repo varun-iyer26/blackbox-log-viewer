@@ -287,8 +287,9 @@ function yieldToMainThread() {
 
 /**
  * Single-pass buffer build with periodic yields so the UI stays responsive.
+ * @param {(progress: { phase: string, percent: number, etaMs: number | null, framesProcessed: number, totalFrames: number }) => void} [onProgress]
  */
-export async function buildAnalysisBuffersAsync(flightLog, maxSamples = 65536) {
+export async function buildAnalysisBuffersAsync(flightLog, maxSamples = 65536, onProgress) {
   const baseline = extractDiagnosticsBaseline(flightLog);
   const missingGyro = baseline.channels?.gyro?.some((c) => c.fieldIndex === undefined);
   if (missingGyro) {
@@ -305,6 +306,37 @@ export async function buildAnalysisBuffersAsync(flightLog, maxSamples = 65536) {
     totalFrames += chunk.frames.length;
   }
   const stride = totalFrames > maxSamples ? Math.ceil(totalFrames / maxSamples) : 1;
+
+  const extractStart = Date.now();
+  let framesProcessed = 0;
+  let lastProgressAt = extractStart;
+
+  const emitProgress = () => {
+    if (!onProgress || totalFrames <= 0) {
+      return;
+    }
+    const now = Date.now();
+    const elapsed = now - extractStart;
+    const percent = Math.min(99, Math.round((framesProcessed / totalFrames) * 100));
+    let etaMs = null;
+    if (framesProcessed > 0 && elapsed > 0) {
+      const rate = framesProcessed / elapsed;
+      const remaining = totalFrames - framesProcessed;
+      etaMs = rate > 0 ? Math.round(remaining / rate) : null;
+    }
+    if (percent === 0 || now - lastProgressAt >= 120 || framesProcessed >= totalFrames) {
+      lastProgressAt = now;
+      onProgress({
+        phase: "extracting",
+        percent,
+        etaMs,
+        framesProcessed,
+        totalFrames,
+      });
+    }
+  };
+
+  emitProgress();
 
   const gyroEntries = baseline.channels.gyro.filter((c) => c.fieldIndex !== undefined);
   const setpointEntries = baseline.channels.setpoint.filter((c) => c.fieldIndex !== undefined);
@@ -369,12 +401,23 @@ export async function buildAnalysisBuffersAsync(flightLog, maxSamples = 65536) {
       if (pidFPack) {
         appendFrame(pidFPack);
       }
+      framesProcessed++;
     }
+
+    emitProgress();
 
     if (ci > 0 && ci % YIELD_EVERY_CHUNKS === 0) {
       await yieldToMainThread();
     }
   }
+
+  onProgress?.({
+    phase: "extracting",
+    percent: 100,
+    etaMs: 0,
+    framesProcessed: totalFrames,
+    totalFrames,
+  });
 
   return {
     sampleRateHz: baseline.loggingRateHz,

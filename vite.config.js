@@ -1,9 +1,21 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
+import { execSync } from "node:child_process";
 import vue from "@vitejs/plugin-vue";
 import ui from "@nuxt/ui/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import pkg from "./package.json";
+
+function gitShortHash() {
+  try {
+    return execSync("git rev-parse --short=12 HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    return "dev";
+  }
+}
+
+const buildHash = process.env.GITHUB_SHA?.slice(0, 12) || gitShortHash();
+const buildTime = new Date().toISOString();
 
 export default defineConfig({
   build: {
@@ -133,5 +145,7 @@ export default defineConfig({
   },
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
+    __BUILD_HASH__: JSON.stringify(buildHash),
+    __BUILD_TIME__: JSON.stringify(buildTime),
   },
 });

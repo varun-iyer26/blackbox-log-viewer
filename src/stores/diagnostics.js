@@ -11,13 +11,25 @@ import {
   CELL_COUNTS,
   FRAME_THRESHOLD_PROFILES,
 } from "../diagnostics/constants.js";
-import { runDiagnosticsInWorker } from "../diagnostics/diagnostics_runner.js";
+import { runDiagnosticsInWorker, cancelDiagnosticsWorker } from "../diagnostics/diagnostics_runner.js";
 import { assessLogQuality } from "../diagnostics/log_quality.js";
+import {
+  loadDiagnosticsPrefs,
+  saveDiagnosticsPrefs,
+  userFacingError,
+} from "../diagnostics/analysis_reliability.js";
+import {
+  getDiagnosticsFlags,
+  isBenchVerificationRequired,
+  isTelemetryOptIn,
+} from "../diagnostics/feature_flags.js";
+import { setTelemetryOptIn as persistTelemetryOptIn } from "../diagnostics/telemetry.js";
 
+const savedPrefs = loadDiagnosticsPrefs();
 export const useDiagnosticsStore = defineStore("diagnostics", () => {
-  const frameArchetype = ref("freestyle_5");
-  const auwGramsText = ref("");
-  const cellCount = ref("4S");
+  const frameArchetype = ref(savedPrefs?.frameArchetype ?? "freestyle_5");
+  const auwGramsText = ref(savedPrefs?.auwGramsText ?? "");
+  const cellCount = ref(savedPrefs?.cellCount ?? "4S");
   const cliDumpText = ref("");
 
   const baseline = ref(null);
@@ -27,7 +39,13 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
   const analysisRunning = ref(false);
   /** @type {import('vue').Ref<'idle'|'extracting'|'analyzing'>} */
   const analysisPhase = ref("idle");
+  const analysisProgress = ref(null);
+  const benchVerified = ref(false);
   const dialogOpen = ref(false);
+
+  const flags = computed(() => getDiagnosticsFlags());
+  const telemetryOptIn = computed(() => isTelemetryOptIn());
+  const benchVerificationRequired = computed(() => isBenchVerificationRequired());
 
   const parsedCliDump = computed(() => parseCliDump(cliDumpText.value));
 
@@ -99,6 +117,13 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
   );
 
   const analysisStatusLabel = computed(() => {
+    if (analysisProgress.value?.phase === "extracting") {
+      const pct = analysisProgress.value.percent ?? 0;
+      const eta = analysisProgress.value.etaMs;
+      const etaText =
+        eta != null && eta > 0 ? ` · ~${Math.ceil(eta / 1000)}s remaining` : "";
+      return `Preparing log data… ${pct}%${etaText}`;
+    }
     if (analysisPhase.value === "extracting") {
       return "Preparing log data…";
     }
@@ -108,14 +133,30 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
     return null;
   });
 
+  const canCopyCli = computed(
+    () =>
+      !!analysisReport.value?.cliCommandsOnly &&
+      (!benchVerificationRequired.value || benchVerified.value),
+  );
+
   const logQuality = computed(() => assessLogQuality(baseline.value));
+
+  function persistPrefs() {
+    saveDiagnosticsPrefs({
+      frameArchetype: frameArchetype.value,
+      auwGramsText: auwGramsText.value,
+      cellCount: cellCount.value,
+    });
+  }
 
   function setFrameArchetype(value) {
     frameArchetype.value = value;
+    persistPrefs();
   }
 
   function setAuwGramsText(value) {
     auwGramsText.value = String(value ?? "").replace(/[^\d]/g, "");
+    persistPrefs();
   }
 
   /** @deprecated Use setAuwGramsText — kept for compatibility */
@@ -125,6 +166,7 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
 
   function setCellCount(value) {
     cellCount.value = value;
+    persistPrefs();
   }
 
   function setCliDumpText(text) {
@@ -152,8 +194,10 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
     }
     analysisRunning.value = true;
     analysisPhase.value = "extracting";
+    analysisProgress.value = null;
     analysisError.value = null;
     analysisReport.value = null;
+    benchVerified.value = false;
 
     try {
       const report = await runDiagnosticsInWorker(
@@ -167,16 +211,38 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
         (phase) => {
           analysisPhase.value = phase;
         },
+        (progress) => {
+          analysisProgress.value = progress;
+        },
       );
       analysisReport.value = report;
       return report;
     } catch (err) {
-      analysisError.value = err?.message ?? "Analysis failed.";
+      analysisError.value = userFacingError(err);
       return null;
     } finally {
       analysisRunning.value = false;
       analysisPhase.value = "idle";
+      analysisProgress.value = null;
     }
+  }
+
+  function setBenchVerified(value) {
+    benchVerified.value = !!value;
+  }
+
+  function setTelemetryOptIn(enabled) {
+    persistTelemetryOptIn(enabled);
+  }
+
+  function cancelAnalysis() {
+    if (!analysisRunning.value) {
+      return;
+    }
+    cancelDiagnosticsWorker();
+    analysisRunning.value = false;
+    analysisPhase.value = "idle";
+    analysisError.value = "Analysis cancelled.";
   }
 
   function resetUserInputs() {
@@ -217,7 +283,13 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
     analysisError,
     analysisRunning,
     analysisPhase,
+    analysisProgress,
     analysisStatusLabel,
+    benchVerified,
+    benchVerificationRequired,
+    canCopyCli,
+    flags,
+    telemetryOptIn,
     dialogOpen,
     logQuality,
     parsedCliDump,
@@ -235,6 +307,9 @@ export const useDiagnosticsStore = defineStore("diagnostics", () => {
     setCliDumpText,
     refreshBaseline,
     runAnalysis,
+    cancelAnalysis,
+    setBenchVerified,
+    setTelemetryOptIn,
     resetUserInputs,
     resetAll,
   };

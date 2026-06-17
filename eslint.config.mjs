@@ -19,6 +19,8 @@ export default [
         L: "readonly", // Leaflet (loaded via <script>)
         chrome: "readonly", // Chrome/Electron extension APIs (pref_storage.js)
         __APP_VERSION__: "readonly", // Vite define
+        __BUILD_HASH__: "readonly", // Vite define
+        __BUILD_TIME__: "readonly", // Vite define
       },
     },
     rules: {

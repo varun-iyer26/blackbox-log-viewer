@@ -2,6 +2,9 @@
  * Download helpers for Auto Diagnostics reports.
  */
 
+import { getBuildInfo, REPORT_SCHEMA_ID, REPORT_SCHEMA_VERSION } from "./build_info.js";
+import { validateReportStructure } from "./schema_validate.js";
+
 function triggerDownload(filename, content, mimeType) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -20,10 +23,19 @@ function safeBasename(name) {
 }
 
 export function buildReportJson(analysis, meta = {}) {
+  const buildInfo = getBuildInfo();
+  const structureErrors = validateReportStructure(analysis);
+  if (structureErrors.length) {
+    console.warn("[Auto Diagnostics] Report structure warnings:", structureErrors);
+  }
+
   return JSON.stringify(
     {
+      schemaVersion: REPORT_SCHEMA_VERSION,
+      schemaId: REPORT_SCHEMA_ID,
       generatedAt: new Date().toISOString(),
       tool: "Betaflight Blackbox Explorer — Auto Diagnostics (experimental)",
+      ...buildInfo,
       ...meta,
       report: analysis,
     },

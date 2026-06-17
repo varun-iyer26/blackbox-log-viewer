@@ -25,6 +25,8 @@ Analyzes an open `.bbl` log for observations, directional tuning hints, and a **
 
 See [UPSTREAM_INTEGRATION.md](./UPSTREAM_INTEGRATION.md) for the exact files to add when contributing to betaflight/blackbox-log-viewer.
 
+For production-style reliability patterns (regression tests, confidence tiers, audit exports), see [RELIABILITY.md](./RELIABILITY.md).
+
 ## Development
 
 ```bash

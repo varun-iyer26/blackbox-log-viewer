@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/betaflight/blackbox-log-viewer/blob/master/docs/schemas/auto-diagnostics-report.schema.json",
+  "title": "AutoDiagnosticsReport",
+  "type": "object",
+  "required": ["schemaVersion", "summary", "hardware", "tuning", "metadata"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "summary": {
+      "type": "object",
+      "required": ["loggingRateHz"],
+      "properties": {
+        "craftName": { "type": "string" },
+        "firmwareVersion": { "type": "string" },
+        "loggingRateHz": { "type": "number" },
+        "flightDurationSec": { "type": "number" },
+        "frameLabel": { "type": "string" },
+        "auwGrams": { "type": ["number", "null"] },
+        "cellCount": { "type": ["string", "null"] }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "required": ["frameResonance", "motorHealth"],
+      "properties": {
+        "frameResonance": {
+          "type": "object",
+          "required": ["status", "peakHz", "confidence", "summary"],
+          "properties": {
+            "status": { "enum": ["green", "yellow", "red"] },
+            "peakHz": { "type": "number" },
+            "peakMag": { "type": "number" },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 100 },
+            "summary": { "type": "string" }
+          }
+        },
+        "motorHealth": {
+          "type": "object",
+          "required": ["status", "summary"],
+          "properties": {
+            "status": { "enum": ["green", "yellow", "red"] },
+            "summary": { "type": "string" }
+          }
+        }
+      }
+    },
+    "tuning": {
+      "type": "object",
+      "required": ["axes"],
+      "properties": {
+        "axes": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["name", "status"],
+            "properties": {
+              "name": { "type": "string" },
+              "status": { "enum": ["green", "yellow", "red"] },
+              "overshootPct": { "type": ["number", "null"] },
+              "settleTimeMs": { "type": ["number", "null"] },
+              "latencyMs": { "type": ["number", "null"] },
+              "stepEvents": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["confidenceScore", "confidenceTier", "analyzedAt"],
+      "properties": {
+        "confidenceScore": { "type": "number", "minimum": 0, "maximum": 100 },
+        "confidenceTier": { "enum": ["high", "medium", "low"] },
+        "confidenceReasons": { "type": "array", "items": { "type": "string" } },
+        "analyzedAt": { "type": "string", "format": "date-time" },
+        "buildHash": { "type": "string" },
+        "toolVersion": { "type": "string" },
+        "buildTime": { "type": ["string", "null"] }
+      }
+    },
+    "cliItems": { "type": "array" },
+    "cliCommandsOnly": { "type": "string" },
+    "directionalHints": { "type": "array" },
+    "observations": { "type": "array", "items": { "type": "string" } }
+  }
+}
