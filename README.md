@@ -140,6 +140,14 @@ to load the new video into the Blackbox Explorer.
 [Handbrake]: https://handbrake.fr/
 [Google Bug #66631]: http://code.google.com/p/chromium/issues/detail?id=66631
 
+## Auto Diagnostics (experimental fork)
+
+This fork adds an **Auto Diagnostics** tool (toolbar → stethoscope icon) that analyzes open `.bbl` logs for filter observations, step-response metrics, and conservative CLI suggestions. It does **not** auto-tune PID values.
+
+See [docs/AUTO_DIAGNOSTICS.md](docs/AUTO_DIAGNOSTICS.md) for usage, log requirements, and safety model. Testers: use the **Auto Diagnostics feedback** issue template on the fork.
+
+Upstream contribution is planned as three stacked PRs — see [docs/PR_SPLIT.md](docs/PR_SPLIT.md).
+
 ## License
 
 This project is licensed under GPLv3.
