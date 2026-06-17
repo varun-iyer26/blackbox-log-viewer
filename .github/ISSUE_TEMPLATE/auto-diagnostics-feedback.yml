@@ -1,0 +1,75 @@
+name: Auto Diagnostics feedback
+description: Report results or bugs from the experimental Auto Diagnostics feature
+title: "[Auto Diagnostics] "
+labels: ["auto-diagnostics", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing **Auto Diagnostics** on this fork. This is experimental and not part of official Betaflight Blackbox Explorer yet.
+
+        Please attach a blackbox log if possible (or describe log rate and flight style). Do **not** paste full CLI dumps with serial numbers or personal info.
+
+  - type: input
+    id: version
+    attributes:
+      label: Explorer version / branch
+      placeholder: e.g. fork feature/auto-diagnostics-polish @ abc1234
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frame
+    attributes:
+      label: Frame archetype selected
+      options:
+        - 2-3" Cinewhoop
+        - 5" Freestyle
+        - 5" Racer
+        - 7" Long Range
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: log-rate
+    attributes:
+      label: Blackbox logging rate (Hz)
+      placeholder: e.g. 2000
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+      description: Paste observations, hints, or CLI block from the report (redact craft name if needed).
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1. Open .bbl log
+        2. Auto Diagnostics → enter AUW / cells
+        3. Run Analysis
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Log quality
+      options:
+        - label: Log was recorded at ≥2 kHz
+        - label: Log includes sharp rolls or flips
+        - label: Optional CLI dump was pasted or imported

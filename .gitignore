@@ -24,3 +24,7 @@ components.d.ts
 CLAUDE.md
 plan.md
 issues.md
+
+# Local blackbox test logs (see test/fixtures/README.md)
+test/fixtures/logs/*.bbl
+test/fixtures/logs/*.bfl
