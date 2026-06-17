@@ -7,7 +7,7 @@
     <template #body>
       <div
         data-auto-diagnostics
-        class="flex flex-col gap-4 max-h-[70vh] overflow-y-auto text-sm"
+        class="flex flex-col gap-4 p-4 max-h-[70vh] overflow-y-auto text-sm"
         @mousedown.stop
         @keydown.stop
         @keyup.stop
@@ -18,51 +18,50 @@
         </div>
 
         <template v-else>
-          <div
+          <UiBox
             v-if="diagnosticsStore.logQuality"
-            class="rounded-lg border border-default px-3 py-2"
+            title="Log quality"
+            :type="logQualityBoxType"
+            highlight
           >
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs font-semibold uppercase text-dimmed">Log quality</span>
+            <div class="flex items-center gap-2">
               <StatusBadge :status="logQualityStatus" compact />
               <span class="text-xs tabular-nums text-dimmed ml-auto">{{ diagnosticsStore.logQuality.score }}/100</span>
             </div>
-            <ul v-if="diagnosticsStore.logQuality.issues.length" class="text-xs text-dimmed list-disc pl-4 space-y-0.5">
+            <ul v-if="diagnosticsStore.logQuality.issues.length" class="text-xs text-dimmed list-disc pl-4 space-y-0.5 mt-1">
               <li v-for="(issue, i) in diagnosticsStore.logQuality.issues" :key="i">{{ issue }}</li>
             </ul>
-          </div>
+          </UiBox>
 
           <div
             v-if="diagnosticsStore.analysisRunning && diagnosticsStore.analysisStatusLabel"
-            class="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-dimmed"
+            class="flex items-center gap-2 text-xs text-dimmed"
           >
             <UIcon name="i-lucide-loader-circle" class="size-4 animate-spin text-primary-500 shrink-0" />
             {{ diagnosticsStore.analysisStatusLabel }}
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-3">
+          <UiBox title="Craft setup">
             <SettingRow label="Frame type">
               <USelect
                 :model-value="diagnosticsStore.frameArchetype"
                 :items="frameArchetypeItems"
                 :ui="{ content: 'z-[300]' }"
                 size="sm"
-                class="w-full"
+                class="min-w-36"
                 @update:model-value="diagnosticsStore.setFrameArchetype"
               />
             </SettingRow>
-            <SettingRow label="AUW (g)">
-              <input
-                :value="diagnosticsStore.auwGramsText"
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                class="w-full rounded-md border border-default bg-default px-2 py-1.5 text-sm font-mono"
+            <SettingRow label="AUW (g)" help="Total all-up weight in grams">
+              <UInput
+                :model-value="diagnosticsStore.auwGramsText"
+                size="sm"
+                class="min-w-24 font-mono"
                 placeholder="650"
+                inputmode="numeric"
                 autocomplete="off"
-                @input="onAuwInput"
+                @update:model-value="diagnosticsStore.setAuwGramsText"
                 @keydown.stop
-                @keyup.stop
               />
             </SettingRow>
             <SettingRow label="Cells">
@@ -71,37 +70,32 @@
                 :items="cellCountItems"
                 :ui="{ content: 'z-[300]' }"
                 size="sm"
-                class="w-full"
+                class="min-w-24"
                 @update:model-value="diagnosticsStore.setCellCount"
               />
             </SettingRow>
-          </div>
+          </UiBox>
 
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-1">
-              <label class="text-xs text-dimmed">
-                CLI dump <span class="opacity-70">(optional — supplements log header)</span>
-              </label>
-              <div class="flex items-center gap-1">
-                <input
-                  ref="cliFileInput"
-                  type="file"
-                  accept=".txt,.diff,.cli,text/plain"
-                  class="hidden"
-                  @change="onCliDumpFile"
-                />
-                <UButton
-                  variant="outline"
-                  color="neutral"
-                  icon="i-lucide-file-up"
-                  label="Import file"
-                  size="xs"
-                  @click="cliFileInput?.click()"
-                />
-              </div>
-            </div>
+          <UiBox title="CLI dump" help="Optional Betaflight diff all or dump — supplements log header" type="neutral">
+            <template #actions>
+              <input
+                ref="cliFileInput"
+                type="file"
+                accept=".txt,.diff,.cli,text/plain"
+                class="hidden"
+                @change="onCliDumpFile"
+              />
+              <UButton
+                variant="outline"
+                color="neutral"
+                icon="i-lucide-file-up"
+                label="Import"
+                size="xs"
+                @click="cliFileInput?.click()"
+              />
+            </template>
             <textarea
-              class="w-full min-h-[72px] font-mono text-xs bg-elevated border border-default rounded p-2 resize-y"
+              class="w-full min-h-[72px] font-mono text-xs bg-default border border-default rounded p-2 resize-y"
               placeholder="# paste diff all output"
               :value="diagnosticsStore.cliDumpText"
               autocomplete="off"
@@ -109,25 +103,8 @@
               @keydown.stop
               @keyup.stop
             />
-            <p v-if="cliImportError" class="text-xs text-red-400 mt-1">{{ cliImportError }}</p>
-          </div>
-
-          <div class="flex items-center justify-between gap-2 flex-wrap">
-            <p v-if="!diagnosticsStore.canRunAnalysis" class="text-xs text-amber-500">
-              {{ runBlockReason }}
-            </p>
-            <div class="flex-1" />
-            <UButton
-              variant="solid"
-              color="primary"
-              icon="i-lucide-play"
-              label="Run Analysis"
-              size="xs"
-              :disabled="!diagnosticsStore.canRunAnalysis"
-              :loading="diagnosticsStore.analysisRunning"
-              @click="runAnalysis"
-            />
-          </div>
+            <p v-if="cliImportError" class="text-xs text-red-400">{{ cliImportError }}</p>
+          </UiBox>
 
           <div v-if="validationBlock.length" class="space-y-1">
             <div
@@ -139,6 +116,10 @@
               <span>{{ msg }}</span>
             </div>
           </div>
+
+          <p v-if="!diagnosticsStore.canRunAnalysis && runBlockReason" class="text-xs text-amber-500">
+            {{ runBlockReason }}
+          </p>
 
           <template v-if="diagnosticsStore.analysisReport">
             <div v-if="diagnosticsStore.analysisReport.directionalHints?.length" class="rounded border border-default p-3">
@@ -324,6 +305,27 @@
         </template>
       </div>
     </template>
+
+    <template #footer>
+      <div v-if="logStore.hasLog" class="flex justify-end gap-2">
+        <UButton
+          variant="outline"
+          color="neutral"
+          label="Close"
+          size="sm"
+          @click="open = false"
+        />
+        <UButton
+          color="primary"
+          icon="i-lucide-play"
+          label="Run analysis"
+          size="sm"
+          :disabled="!diagnosticsStore.canRunAnalysis"
+          :loading="diagnosticsStore.analysisRunning"
+          @click="runAnalysis"
+        />
+      </div>
+    </template>
   </UModal>
 </template>
 
@@ -338,6 +340,7 @@ import {
   readCliDumpFile,
 } from "../diagnostics/report_export.js";
 import SettingRow from "./SettingRow.vue";
+import UiBox from "./UiBox.vue";
 import StatusBadge from "./DiagnosticsStatusBadge.vue";
 
 const open = defineModel("open", { type: Boolean, default: false });
@@ -357,6 +360,17 @@ const logQualityStatus = computed(() => {
     return "yellow";
   }
   return "red";
+});
+
+const logQualityBoxType = computed(() => {
+  const grade = diagnosticsStore.logQuality?.grade;
+  if (grade === "good") {
+    return "success";
+  }
+  if (grade === "fair") {
+    return "warning";
+  }
+  return "error";
 });
 
 const frameArchetypeItems = computed(() =>
@@ -384,10 +398,6 @@ const runBlockReason = computed(() => {
   }
   return "Analysis unavailable for this log.";
 });
-
-function onAuwInput(event) {
-  diagnosticsStore.setAuwGramsText(event.target.value);
-}
 
 function onCliDumpInput(event) {
   diagnosticsStore.setCliDumpText(event.target.value);
