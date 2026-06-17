@@ -15,6 +15,7 @@ import {
 } from "./tools.js";
 import { restorePenDefaults, changePenSmoothing, changePenZoom, changePenExpo } from "./pen_adjustment.js";
 import { createKeydownHandler } from "./keyboard_handler.js";
+import { shouldIgnoreGraphShortcuts } from "./input_guard.js";
 import { upgradeWorkspaceFormat, saveWorkspaces, loadWorkspaces } from "./workspace_io.js";
 import { exportCsv, exportGpx, exportSpectrumToCsv } from "./export_utils.js";
 import { syncLogToVideo, setVideoOffset, setVideoTime, setVideoInTime, setVideoOutTime, loadVideo, reportVideoError } from "./video_handler.js";
@@ -496,7 +497,7 @@ function BlackboxLogViewer() {
           return;
         }
 
-        if (graph && !e.target.closest(".modal")) {
+        if (graph && !shouldIgnoreGraphShortcuts(e.target)) {
           let rawDelta = 0;
           if (e.deltaY < 0) {
             rawDelta = 1;

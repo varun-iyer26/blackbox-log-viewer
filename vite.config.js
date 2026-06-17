@@ -69,7 +69,8 @@ export default defineConfig({
         },
         modal: {
           slots: {
-            overlay: "z-[200]",
+            overlay:
+              "fixed inset-0 z-[200] bg-elevated/75 data-[state=open]:animate-[fade-in_200ms_ease-out] data-[state=closed]:animate-[fade-out_200ms_ease-in]",
             content: "z-[200]",
           },
         },
