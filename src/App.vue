@@ -15,6 +15,7 @@
           @export-video="onExportVideo"
           @export-workspaces="onExportWorkspaces"
           @new-window="onNewWindow"
+          @open-diagnostics="onOpenDiagnostics"
         />
       </Teleport>
       <Teleport to="#vue-statusbar">
@@ -115,6 +116,7 @@
         :videoConfig="playbackStore.videoConfig"
         @save-config="onSaveVideoConfig"
       />
+      <AutoDiagnosticsPanel v-model:open="diagnosticsStore.dialogOpen" />
     </div>
   </UApp>
 </template>
@@ -127,6 +129,7 @@ import { useLogStore, FIRMWARE_CLASSES } from "./stores/log.js";
 import { usePlaybackStore } from "./stores/playback.js";
 import { useSettingsStore } from "./stores/settings.js";
 import { useWorkspaceStore } from "./stores/workspace.js";
+import { useDiagnosticsStore } from "./stores/diagnostics.js";
 import AppToolbar from "./components/AppToolbar.vue";
 import WelcomePage from "./components/WelcomePage.vue";
 import ViewControls from "./components/ViewControls.vue";
@@ -146,6 +149,7 @@ import SpectrumAnalyser from "./components/SpectrumAnalyser.vue";
 import LegendPanel from "./components/LegendPanel.vue";
 import FieldValuesPanel from "./components/FieldValuesPanel.vue";
 import ConfigurationPanel from "./components/ConfigurationPanel.vue";
+import AutoDiagnosticsPanel from "./components/AutoDiagnosticsPanel.vue";
 import SeekBarToolbar from "./components/SeekBarToolbar.vue";
 
 const graphStore = useGraphStore();
@@ -154,6 +158,7 @@ const logStore = useLogStore();
 const playbackStore = usePlaybackStore();
 const settingsStore = useSettingsStore();
 const workspaceStore = useWorkspaceStore();
+const diagnosticsStore = useDiagnosticsStore();
 
 // Centralized CSS class binding — replaces 27 imperative html.classList calls in main.js
 watchEffect(() => {
@@ -221,10 +226,18 @@ function onNewWindow() {
   appStore.openNewWindow?.();
 }
 
-function onViewConfig() {
+function onOpenDiagnostics() {
+  diagnosticsStore.dialogOpen = true;
+}
+
+function closeViewOverlays() {
   appStore.headerDialogOpen = false;
   graphStore.hasTableOverlay = false;
   graphStore.hasConfigOverlay = false;
+}
+
+function onViewConfig() {
+  closeViewOverlays();
 }
 
 function onToggleHeader() {

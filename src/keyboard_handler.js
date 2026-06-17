@@ -1,5 +1,6 @@
 import { formatTime } from "./tools.js";
 import { GRAPH_MIN_ZOOM } from "./stores/graph.js";
+import { shouldIgnoreGraphShortcuts } from "./input_guard.js";
 
 /**
  * Create a keydown event handler for the document.
@@ -274,6 +275,10 @@ export function createKeydownHandler(ctx) {
   }
 
   return function (e) {
+    if (shouldIgnoreGraphShortcuts(e.target)) {
+      return;
+    }
+
     const shifted = e.altKey || e.shiftKey || e.ctrlKey || e.metaKey;
     if (
       e.key === "Enter" &&
@@ -282,7 +287,7 @@ export function createKeydownHandler(ctx) {
     ) {
       e.target.blur();
     }
-    if (hasGraph() && e.target.type !== "text" && !e.target.closest(".modal")) {
+    if (hasGraph()) {
       if (e.code.startsWith("Digit")) {
         try {
           handleDigitKey(e);

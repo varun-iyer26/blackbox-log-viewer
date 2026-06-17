@@ -58,6 +58,16 @@
           size="xs"
           @click="$emit('export-gpx')"
         />
+        <USeparator orientation="vertical" class="h-4" />
+        <UButton
+          variant="ghost"
+          color="neutral"
+          label="Auto Diagnostics"
+          icon="i-lucide-stethoscope"
+          size="xs"
+          title="Analyze log for filter/PID observations (experimental)"
+          @click="$emit('open-diagnostics')"
+        />
       </div>
       <div class="flex items-center gap-1">
         <UButton
@@ -95,6 +105,7 @@ defineEmits([
   "new-window",
   "open-settings",
   "open-keys",
+  "open-diagnostics",
 ]);
 
 const logStore = useLogStore();
