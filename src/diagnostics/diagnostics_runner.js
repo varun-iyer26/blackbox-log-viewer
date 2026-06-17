@@ -1,6 +1,10 @@
 import { buildAnalysisBuffersAsync } from "./data_extractor.js";
 import { attachCliToAnalysis } from "./cli_recommendations.js";
 import { REFERENCE_TUNING_PROFILES } from "./constants.js";
+import {
+  buildWorkerPayload,
+  collectTransferables,
+} from "./worker_serialization.js";
 
 const WORKER_TIMEOUT_MS = 45000;
 
@@ -15,39 +19,6 @@ function getWorker() {
     );
   }
   return workerInstance;
-}
-
-function serializeChannelPack(pack) {
-  if (!pack) {
-    return { timesUs: new Float32Array(0), series: [] };
-  }
-  return {
-    timesUs: pack.timesUs,
-    series: pack.series.map((s) => ({
-      axis: s.axis,
-      motor: s.motor,
-      data: s.data,
-    })),
-  };
-}
-
-function collectTransferables(payload) {
-  const transferables = [];
-  for (const key of ["gyro", "setpoint", "rcCommand", "motor", "pidI", "pidF"]) {
-    const pack = payload[key];
-    if (!pack) {
-      continue;
-    }
-    if (pack.timesUs?.buffer) {
-      transferables.push(pack.timesUs.buffer);
-    }
-    for (const s of pack.series) {
-      if (s.data?.buffer) {
-        transferables.push(s.data.buffer);
-      }
-    }
-  }
-  return transferables;
 }
 
 function runWorkerAnalysis(payload, transferables) {
@@ -108,21 +79,11 @@ export async function runDiagnosticsInWorker(flightLog, context, onPhaseChange) 
   const referenceProfile =
     REFERENCE_TUNING_PROFILES[archetype] ?? REFERENCE_TUNING_PROFILES.freestyle_5;
 
-  const payload = {
-    sampleRateHz: buffers.sampleRateHz,
-    flightDurationSec: context.baseline?.flightDurationSec ?? 0,
-    gyro: serializeChannelPack(buffers.gyro),
-    setpoint: serializeChannelPack(buffers.setpoint),
-    rcCommand: serializeChannelPack(buffers.rcCommand),
-    motor: serializeChannelPack(buffers.motor),
-    pidI: serializeChannelPack(buffers.pidI),
-    pidF: serializeChannelPack(buffers.pidF),
-    thresholdProfile: context.thresholdProfile,
+  const payload = buildWorkerPayload(
+    buffers,
+    { ...context, saturationThreshold },
     referenceProfile,
-    hardwareProfile: context.hardwareProfile,
-    headerBaseline: context.baseline?.headerBaseline ?? null,
-    saturationThreshold,
-  };
+  );
 
   const transferables = collectTransferables(payload);
 

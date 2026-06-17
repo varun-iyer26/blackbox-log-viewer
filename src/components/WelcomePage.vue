@@ -1,88 +1,110 @@
 <template>
-  <div v-if="!logStore.hasLog" class="welcome-page">
-    <!-- Hero -->
-    <div class="hero">
-      <img src="/images/light-wide-2.svg" alt="Betaflight" class="hero-logo" />
-      <p class="hero-subtitle">Blackbox Explorer</p>
-      <p class="hero-tagline">Analyze flight logs recorded by Betaflight's Blackbox feature</p>
-      <LogFileInput size="lg" label="Open log file / video" @files-selected="$emit('files-selected', $event)" />
+  <div v-if="!logStore.hasLog" class="welcome-pane">
+    <div class="welcome-container">
+      <div class="jumbotron">
+        <h1>Welcome to the Enhanced Blackbox Explorer!</h1>
+        <p>This tool allows you to view and analyze logs created by Betaflight's Blackbox feature.</p>
+        <LogFileInput
+          size="lg"
+          label="Open log file/video"
+          @files-selected="$emit('files-selected', $event)"
+        />
+      </div>
     </div>
 
-    <!-- Info grid -->
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="info-card-header">
-          <UIcon name="i-lucide-book-open" class="size-4 text-primary-500" />
-          <h3>Getting Started</h3>
+    <div class="welcome-container">
+      <div class="panel-row">
+        <div class="panel panel-default">
+          <div class="panel-heading">Introduction to Blackbox</div>
+          <div class="panel-body">
+            <p>
+              The Blackbox feature is built in to
+              <a href="https://github.com/betaflight/betaflight/releases" target="_blank" rel="noopener noreferrer">Betaflight</a>
+              and is supported on most modern flight controllers (HAKRC F405, SpeedyBee F405, Mamba F722, etc.).
+            </p>
+            <p>
+              To get started with Blackbox recording, read
+              <a href="https://github.com/betaflight/betaflight/blob/master/docs/Blackbox.md" target="_blank" rel="noopener noreferrer">Betaflight's Blackbox feature documentation</a>.
+            </p>
+            <p>
+              Already have a log recorded? View
+              <a href="https://github.com/betaflight/blackbox-tools/blob/master/Readme.md" target="_blank" rel="noopener noreferrer">the documentation for this log viewer</a>
+              for details on how to best use this tool.
+            </p>
+            <p>
+              If you believe you've found a bug in this viewer (e.g. the viewer crashes upon attempting to open a log file), or you have
+              a suggestion, please add it to
+              <a href="https://github.com/betaflight/blackbox-log-viewer/issues" target="_blank" rel="noopener noreferrer">the viewer's GitHub bug tracker</a>.
+            </p>
+          </div>
         </div>
-        <p>
-          Blackbox is built in to
-          <a href="https://github.com/betaflight/betaflight/releases" target="_blank" rel="noopener noreferrer">Betaflight</a>
-          and supported on most flight controllers.
-        </p>
-        <div class="info-links">
-          <a href="https://github.com/betaflight/betaflight/blob/master/docs/Blackbox.md" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-file-text" class="size-3.5" /> Recording docs
-          </a>
-          <a href="https://github.com/betaflight/blackbox-tools/blob/master/Readme.md" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-monitor" class="size-3.5" /> Viewer docs
-          </a>
-          <a href="https://github.com/betaflight/blackbox-log-viewer/issues" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-bug" class="size-3.5" /> Report a bug
-          </a>
-        </div>
-      </div>
 
-      <div class="info-card">
-        <div class="info-card-header">
-          <UIcon name="i-lucide-sliders-horizontal" class="size-4 text-primary-500" />
-          <h3>Tuning Resources</h3>
+        <div class="panel panel-default">
+          <div class="panel-heading">Tuning your craft</div>
+          <div class="panel-body">
+            <p>
+              The Blackbox can deliver insights on your flight performance that will allow you to tune variables such as your PIDs and
+              low-pass filter settings.
+            </p>
+            <p>For help and instructions on how to tune your craft, please read some of these resources:</p>
+            <ul>
+              <li>
+                <a href="http://www.rcgroups.com/forums/showthread.php?t=2439428" target="_blank" rel="noopener noreferrer">Mini quad PID tuning from start to finish</a>
+                by Joshua Bardwell on RCGroups.com
+              </li>
+              <li>
+                <a href="http://www.rcgroups.com/forums/showthread.php?t=2386267" target="_blank" rel="noopener noreferrer">Blackbox log analyzation/help thread</a>
+                on RCGroups.com
+              </li>
+              <li>
+                <a href="https://github.com/betaflight/betaflight/blob/master/docs/PID-Tuning.md" target="_blank" rel="noopener noreferrer">Betaflight's PID tuning documentation</a>
+              </li>
+              <li>
+                <a href="http://www.rcgroups.com/forums/showthread.php?t=2464844" target="_blank" rel="noopener noreferrer">Betaflight support topic</a>
+                on RCGroups.com
+              </li>
+              <li>
+                <a href="http://www.rcgroups.com/forums/showthread.php?t=2299805" target="_blank" rel="noopener noreferrer">Blackbox announcement topic (original viewer)</a>
+                on RCGroups.com
+              </li>
+              <li>
+                <a href="http://www.rcgroups.com/forums/showthread.php?t=2649495" target="_blank" rel="noopener noreferrer">Enhanced Blackbox announcement topic (this viewer)</a>
+                on RCGroups.com
+              </li>
+            </ul>
+          </div>
         </div>
-        <p>Use Blackbox insights to tune PIDs and filter settings.</p>
-        <div class="info-links">
-          <a href="https://github.com/betaflight/betaflight/blob/master/docs/PID-Tuning.md" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-file-text" class="size-3.5" /> PID tuning docs
-          </a>
-          <a href="http://www.rcgroups.com/forums/showthread.php?t=2439428" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-graduation-cap" class="size-3.5" /> PID guide — J. Bardwell
-          </a>
-          <a href="http://www.rcgroups.com/forums/showthread.php?t=2386267" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-message-circle" class="size-3.5" /> Log analysis — RCGroups
-          </a>
-        </div>
-      </div>
 
-      <div class="info-card">
-        <div class="info-card-header">
-          <UIcon name="i-lucide-wrench" class="size-4 text-primary-500" />
-          <h3>Tools</h3>
+        <div class="panel panel-default">
+          <div class="panel-heading">Other tools</div>
+          <div class="panel-body">
+            <p>
+              If you want to analyze your logs with your own mathematics package (such as Matlab) you can use the separate
+              <a href="https://github.com/betaflight/blackbox-tools/" target="_blank" rel="noopener noreferrer">blackbox_decode tool</a>
+              to convert your log file into a CSV file for analysis.
+            </p>
+            <p>
+              If you want to share your log as a video, you can use the "export video" button at the top to render a WebM video, or use
+              the commandline
+              <a href="https://github.com/betaflight/blackbox-tools/" target="_blank" rel="noopener noreferrer">blackbox_render tool</a>
+              tool to turn your log into a series of PNG files, or use a screen recording tool to record the playback of this log viewer.
+            </p>
+          </div>
         </div>
-        <p>Convert and export your logs for further analysis.</p>
-        <div class="info-links">
-          <a href="https://github.com/betaflight/blackbox-tools/" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-terminal" class="size-3.5" /> blackbox_decode — CSV export
-          </a>
-          <a href="https://github.com/betaflight/blackbox-tools/" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-film" class="size-3.5" /> blackbox_render — PNG frames
-          </a>
-        </div>
-      </div>
 
-      <div class="info-card">
-        <div class="info-card-header">
-          <UIcon name="i-lucide-info" class="size-4 text-primary-500" />
-          <h3>Links</h3>
-        </div>
-        <div class="info-links">
-          <a href="https://blackbox.betaflight.com" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-globe" class="size-3.5" /> Latest release
-          </a>
-          <a href="https://master.blackbox.betaflight.com/" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-git-branch" class="size-3.5" /> Development build
-          </a>
-          <a href="https://github.com/betaflight/blackbox-log-viewer" target="_blank" rel="noopener noreferrer">
-            <UIcon name="i-lucide-github" class="size-3.5" /> Source on GitHub
-          </a>
+        <div class="panel panel-default">
+          <div class="panel-heading">Version</div>
+          <div class="panel-body">
+            <p>This build: <strong>{{ appVersion }}</strong> (Auto Diagnostics experimental fork)</p>
+            <p>
+              The latest official release is at
+              <a href="https://blackbox.betaflight.com" target="_blank" rel="noopener noreferrer">blackbox.betaflight.com</a>
+            </p>
+            <p>
+              The latest development version is at
+              <a href="https://master.blackbox.betaflight.com/" target="_blank" rel="noopener noreferrer">master.blackbox.betaflight.com</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -95,142 +117,145 @@ import LogFileInput from "./LogFileInput.vue";
 
 defineEmits(["files-selected"]);
 const logStore = useLogStore();
+const appVersion = __APP_VERSION__;
 </script>
 
 <style scoped>
-.welcome-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 60vh;
-  gap: 2rem;
-  padding: 2.5rem 1.5rem 1.5rem;
+.welcome-pane {
+  padding: 1.5rem 0 2rem;
+  background: #f5f5f5;
+  min-height: 100vh;
 }
 
-/* Hero section */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+:root.dark .welcome-pane {
+  background: hsl(0, 0%, 14%);
+}
+
+.welcome-container {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.jumbotron {
+  background: #eee;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
-  gap: 0.25rem;
 }
 
-.hero-logo {
-  width: min(360px, 80vw);
-  margin-bottom: 0.25rem;
-  filter: brightness(0) invert(0);
+:root.dark .jumbotron {
+  background: hsl(0, 0%, 18%);
+  border-color: hsl(0, 0%, 28%);
 }
 
-:root.dark .hero-logo {
-  filter: brightness(0) invert(1);
-}
-
-.hero-subtitle {
-  font-size: 1.1rem;
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-primary-500);
-  margin: 0;
-}
-
-.hero-tagline {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+.jumbotron h1 {
+  font-size: 2rem;
+  font-weight: 500;
   margin: 0 0 0.75rem;
+  color: #333;
 }
 
-/* Info grid */
-.info-grid {
+:root.dark .jumbotron h1 {
+  color: #eee;
+}
+
+.jumbotron p {
+  font-size: 1.05rem;
+  color: #555;
+  margin: 0 0 1.25rem;
+}
+
+:root.dark .jumbotron p {
+  color: #bbb;
+}
+
+.panel-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 56rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
-@media (max-width: 900px) {
-  .info-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 500px) {
-  .info-grid {
+@media (max-width: 992px) {
+  .panel-row {
     grid-template-columns: 1fr;
   }
 }
 
-/* Info cards */
-.info-card {
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  background: var(--surface-0);
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  transition: border-color 0.2s;
+.panel {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  margin-bottom: 0;
 }
 
-.info-card:hover {
-  border-color: var(--color-primary-500);
+:root.dark .panel {
+  background: hsl(0, 0%, 16%);
+  border-color: hsl(0, 0%, 28%);
 }
 
-.info-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.info-card-header h3 {
-  font-size: 0.8rem;
+.panel-heading {
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  border-bottom: 1px solid #ddd;
+  background: #f7f7f7;
+  color: #333;
+}
+
+:root.dark .panel-heading {
+  background: hsl(0, 0%, 20%);
+  border-color: hsl(0, 0%, 28%);
+  color: #eee;
+}
+
+.panel-body {
+  padding: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #444;
+}
+
+:root.dark .panel-body {
+  color: #ccc;
+}
+
+.panel-body p {
+  margin: 0 0 0.75rem;
+}
+
+.panel-body ul {
   margin: 0;
-  color: var(--text-primary);
+  padding-left: 1.25rem;
 }
 
-.info-card p {
-  margin: 0;
-  line-height: 1.4;
+.panel-body li {
+  margin-bottom: 0.35rem;
 }
 
-/* Link list */
-.info-links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  margin-top: auto;
-  padding-top: 0.25rem;
-  border-top: 1px solid var(--border-color, #eee);
-}
-
-.info-links a {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.7rem;
-  color: var(--color-primary-700, #bb6502);
+.panel-body a {
+  color: #337ab7;
   text-decoration: none;
-  padding: 0.2rem 0.35rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.15s, color 0.15s;
 }
 
-.info-links a:hover {
-  background-color: var(--color-primary-50, #fffeea);
-  color: var(--color-primary-800, #964f00);
+.panel-body a:hover {
+  text-decoration: underline;
 }
 
-:root.dark .info-links a {
-  color: var(--color-primary-400, #ffd03d);
+:root.dark .panel-body a {
+  color: #6cb2ff;
 }
 
-:root.dark .info-links a:hover {
-  background-color: rgba(255, 187, 0, 0.1);
-  color: var(--color-primary-300, #ffe066);
+.panel-row .panel:last-child {
+  grid-column: 1 / -1;
+  max-width: 33%;
+}
+
+@media (max-width: 992px) {
+  .panel-row .panel:last-child {
+    max-width: none;
+  }
 }
 </style>
