@@ -1,0 +1,7 @@
+set dshot_bidir = OFF
+set rpm_filter_harmonics = 3
+set gyro_lpf1_static_hz = 450
+set dyn_notch_min_hz = 100
+set roll_p = 45
+set roll_i = 80
+set roll_d = 35
